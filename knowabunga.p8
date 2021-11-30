@@ -18,8 +18,7 @@ function _init()
  px,py,vx,vy=64,84,0,0
  prx,pry=px,pu
  jump_flag,did_hit=false,false
- icons={}
- floats={}
+ icons,floats,particles={},{},{}
  score,boing,last_boing=0,0,500
  for i=1,3 do
   spawn_icon()
@@ -29,6 +28,7 @@ end
 
 function _update()
  _upd()
+ update_particles()
 end
 
 function _draw()
@@ -81,9 +81,11 @@ function update_game()
   jump_flag = true
   if did_hit then
     sfx(1)
+    add_hit_particles(px, py)
   else
     sfx(0)
   end
+  add_boing_particles(px, py)
  elseif jump_flag and t > 0.2 then
   jump_flag = false
   did_hit = false
@@ -162,6 +164,12 @@ function draw_game()
  
  for icon in all(icons) do
   draw_icon(icon)
+ end
+ for particle in all(particles) do
+  draw_particle(particle,1,1)
+ end
+ for particle in all(particles) do
+  draw_particle(particle,11,0.6)
  end
  for float in all(floats) do
   draw_float(float)
@@ -262,6 +270,30 @@ end
 function print_score()
  local st = score..""
  printo(score,65-(#st*2),121,11,1)
+end
+
+function update_particles()
+  for particle in all(particles) do
+   particle[3]+=particle[4]
+   particle[1]+=particle[5]
+   particle[2]+=particle[6]
+   if particle[3] > particle[8] then
+    del(particles, particle)
+   end
+  end
+end
+function add_hit_particles(x,y)
+  for i=1,10 do
+   add(particles, {x,y,0,rnd(0.25)+0.5,rnd(2)-1,rnd(2)-1,10,7})
+  end
+end
+function add_boing_particles(x,y)
+  for i=1,10 do
+   add(particles, {x,y+4,0,rnd(0.25)+0.1,rnd(2)-1,rnd(0.5),3,5})
+  end
+end
+function draw_particle(particle, col, scale)
+  circfill(particle[1],particle[2],(particle[7]-particle[3])*scale,col)
 end
 
 __gfx__
