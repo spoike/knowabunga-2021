@@ -17,7 +17,7 @@ function _init()
  _drw=draw_game
  px,py,vx,vy=64,84,0,0
  prx,pry=px,pu
- jump_flag=false
+ jump_flag,did_hit=false,false
  icons={}
  floats={}
  score,boing,last_boing=0,0,500
@@ -63,11 +63,10 @@ function update_game()
   end
  end
 
- local did_hit=false
- if t < 0.2 then
+ if not did_hit and t < 0.2 then
   for icon in all(icons) do
    local iconx,icony = icon_pos(icon)
-   if iconx-6 <= px and iconx+6 >= px and icony-6 <= py and icony+6 >= py then
+   if not did_hit and iconx-6 <= px and iconx+6 >= px and icony-6 <= py and icony+6 >= py then
     del(icons, icon)
     spawn_icon()
     did_hit=true
@@ -87,6 +86,7 @@ function update_game()
   end
  elseif jump_flag and t > 0.2 then
   jump_flag = false
+  did_hit = false
  end
 end
 
