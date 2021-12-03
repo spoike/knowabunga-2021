@@ -20,6 +20,7 @@ function _init()
  jump_flag,did_hit=false,false
  icons,floats,particles={},{},{}
  score,boing,last_boing=0,0,500
+ tnow,tprev,elapsed=0,0,0
  for i=1,3 do
   spawn_icon()
  end
@@ -27,6 +28,10 @@ function _init()
 end
 
 function _update()
+ tprev = tnow
+ tnow = t()
+ tdiff = tnow - tprev
+ elapsed += tdiff
  _upd()
  update_particles()
 end
@@ -84,8 +89,8 @@ function update_game()
     add_hit_particles(px, py)
   else
     sfx(0)
+    add_boing_particles(px, py)
   end
-  add_boing_particles(px, py)
  elseif jump_flag and t > 0.2 then
   jump_flag = false
   did_hit = false
@@ -268,8 +273,12 @@ function printo(text,x,y,fgc,bgc)
 end
 
 function print_score()
- local st = score..""
- printo(score,65-(#st*2),121,11,1)
+ local st = ""..score
+ printo(st,65-(#st*2),121,11,1)
+ --print(#particles,0,0)
+
+ --local timer = ""..(20-flr(elapsed))
+ --printo(timer,65-(#timer*2),1,11,1)
 end
 
 function update_particles()
@@ -283,8 +292,9 @@ function update_particles()
   end
 end
 function add_hit_particles(x,y)
+  add(particles, {x,y,0,1,0,0,20,30})
   for i=1,10 do
-   add(particles, {x,y,0,rnd(0.25)+0.5,rnd(2)-1,rnd(2)-1,10,7})
+   add(particles, {x,y,0,rnd(0.25)+0.5,rnd(4)-2,rnd(4)-2,10,10})
   end
 end
 function add_boing_particles(x,y)
